@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Business Rescue: The Entrepreneur’s Challenge</title>
+<meta name="theme-color" content="#14213D">
+<meta name="description" content="Group activity: analyze a socio-economic challenge and simulate business decisions.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+:root{
+  --ink:#14213D; --paper:#F2F5F3; --card:#FFFFFF; --muted:#5B6678; --line:#D5DBD8;
+  --accent:#E09F3E; --accent-ink:#14213D;
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{--ink:#E8ECF4; --paper:#0E1424; --card:#18203A; --muted:#9AA6BD; --line:#2A3556; --accent-ink:#0E1424}
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:16px/1.5 "Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+h1,h2,h3{line-height:1.15;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 96px}
+
+/* Header */
+header{padding:20px 0 12px}
+header h1{font-size:clamp(1.6rem,6vw,2.2rem);font-weight:800;letter-spacing:-.02em}
+header p{margin:6px 0 0;color:var(--muted);max-width:56ch}
+.top-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:999px;padding:8px 16px;font-weight:600;min-height:44px}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn[hidden]{display:none}
+
+/* Timer */
+.timer{background:var(--ink);color:var(--paper);border-radius:var(--radius);padding:16px;margin:8px 0 20px}
+@media (prefers-color-scheme:dark){.timer{background:#1F2A4A;color:#E8ECF4}}
+.timer .phase{font-size:.95rem;opacity:.85}
+.timer .clock{font-size:3.2rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
+.segs{display:flex;gap:3px;margin:12px 0}
+.seg{height:8px;border-radius:4px;background:rgba(255,255,255,.2);overflow:hidden}
+.seg i{display:block;height:100%;width:0;background:var(--accent)}
+.seg.done i{width:100%}
+.seg.now{outline:2px solid rgba(255,255,255,.6)}
+.tbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tbtns .btn{border-color:rgba(255,255,255,.7);color:inherit}
+.tbtns .btn.go{background:var(--accent);border-color:var(--accent);color:#14213D}
+
+/* Group tabs */
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px}
+.tab{border:0;border-radius:10px;padding:10px 0;background:var(--card);border:1.5px solid var(--line);font-weight:700;text-align:center;line-height:1.2}
+.tab small{display:block;font-weight:500;color:var(--muted);font-size:.68rem;margin-top:2px}
+.tab[aria-selected=true]{background:var(--gc);border-color:var(--gc);color:#fff}
+.tab[aria-selected=true] small{color:rgba(255,255,255,.85)}
+
+/* Shop awning card — the one memorable element */
+.shop{background:var(--card);border-radius:var(--radius);border:1.5px solid var(--line);overflow:hidden;margin-bottom:16px}
+.awning{height:44px;background:
+  radial-gradient(circle at 20px 100%,var(--paper) 0 13px,transparent 14px) 0 100%/40px 22px repeat-x,
+  repeating-linear-gradient(90deg,var(--gc) 0 40px,color-mix(in srgb,var(--gc) 55%,#fff) 40px 80px)}
+.shop-body{padding:4px 18px 18px}
+.factor{display:inline-block;background:var(--gc);color:#fff;font-weight:700;border-radius:6px;padding:2px 10px;font-size:.9rem}
+.shop h2{font-size:1.45rem;margin:10px 0 8px}
+.situation{margin:0 0 12px}
+.challenge{border-left:4px solid var(--gc);padding:4px 0 4px 12px;margin:0;font-weight:600}
+
+section.block{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+section.block h3{font-size:1.1rem;margin-bottom:10px}
+.check{display:flex;gap:12px;align-items:flex-start;padding:8px 0;min-height:44px}
+.check input{width:22px;height:22px;margin-top:2px;accent-color:var(--gc);flex:none}
+.check span{flex:1}
+.check input:checked+span{color:var(--muted);text-decoration:line-through}
+label.f{display:block;font-weight:700;margin-top:12px}
+label.f em{display:block;font-style:normal;font-weight:400;color:var(--muted);font-size:.9rem}
+textarea{width:100%;min-height:84px;margin-top:6px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:inherit;font:inherit;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.saved{color:var(--muted);font-size:.85rem;align-self:center}
+
+/* Overview */
+.time-table{width:100%;border-collapse:collapse}
+.time-table td{padding:6px 0;border-bottom:1px solid var(--line)}
+.time-table td:last-child{text-align:right;font-weight:700}
+footer{color:var(--muted);font-size:.85rem;text-align:center;padding:8px 0}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.offline{display:none;background:#FFE9B5;color:#14213D;text-align:center;padding:6px;font-size:.85rem}
+body.is-offline .offline{display:block}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="offline" role="status">You’re offline. Everything still works.</div>
+<div class="wrap">
+  <header>
+    <h1>Business Rescue: The Entrepreneur’s Challenge</h1>
+    <p>Five teams act as business owners facing a socio-economic problem. Analyze it, decide, and act it out. 20 minutes total.</p>
+    <div class="top-actions">
+      <button class="btn primary" id="install" hidden>Install app</button>
+      <button class="btn" id="clearAll">Clear all notes</button>
+    </div>
+  </header>
+
+  <div class="timer" aria-label="Activity timer">
+    <div class="phase" id="phase">Group preparation</div>
+    <div class="clock" id="clock" role="timer" aria-live="off">08:00</div>
+    <div class="segs" id="segs" aria-hidden="true"></div>
+    <div class="tbtns">
+      <button class="btn go" id="startBtn">Start</button>
+      <button class="btn" id="skipBtn">Next phase</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs" aria-label="Groups"></div>
+  <div id="panel" role="tabpanel"></div>
+
+  <section class="block">
+    <h3>Time allocation</h3>
+    <table class="time-table">
+      <tr><td>Group preparation</td><td>8 minutes</td></tr>
+      <tr><td>Business simulation / presentation</td><td>2 minutes per group</td></tr>
+    </table>
+  </section>
+  <footer>Works offline once loaded. Notes stay on this device.</footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const GROUPS=[
+ {n:1,factor:"Inflation",title:"The Rising Cost of Production",color:"#B8731A",
+  story:"Your bakery experiences an increase in the price of flour, sugar, and electricity. Your production expenses have increased, but you do not want to lose your customers.",
+  challenge:"What will you do to manage your expenses while keeping your products affordable?"},
+ {n:2,factor:"Unemployment",title:"The Declining Number of Customers",color:"#7B2D5B",
+  story:"A clothing store experiences fewer customers because several residents in the community have lost their jobs.",
+  challenge:"How will you attract customers and maintain your business despite the declining purchasing power of the community?"},
+ {n:3,factor:"Income",title:"The Budget-Conscious Consumers",color:"#B23A2E",
+  story:"A restaurant notices that most customers now prefer affordable meals because of limited household income.",
+  challenge:"How will you adjust your products and services to meet the needs of your customers?"},
+ {n:4,factor:"Technology",title:"The Digital Business Challenge",color:"#1F6F8B",
+  story:"A traditional neighborhood store is losing customers to online sellers who offer convenient transactions and home delivery.",
+  challenge:"How will you use technology to improve your business operations and reach more customers?"},
+ {n:5,factor:"Consumer Behavior",title:"Changing Customer Preferences",color:"#2E7D4F",
+  story:"A fast-food business notices that customers are increasingly looking for healthier and more affordable food choices.",
+  challenge:"How will you modify your products and marketing strategies to respond to these changes?"}
+];
+const TASKS=[
+ "Identify the socio-economic factor affecting the business.",
+ "Explain how the situation affects business operations.",
+ "Propose at least two appropriate business decisions or solutions.",
+ "Present a short business simulation or role-play demonstrating your solutions."
+];
+const FIELDS=[
+ ["situation","Business situation","What is the problem?"],
+ ["factor","Socio-economic factor","What factor affects the business?"],
+ ["decision","Business decision","What action will you take? (at least two)"],
+ ["outcome","Expected outcome","How will your decision help the business and its customers?"]
+];
+const PHASES=[{label:"Group preparation",sec:480}].concat(GROUPS.map(g=>({label:"Group "+g.n+" presents: "+g.factor,sec:120})));
+
+const $=s=>document.querySelector(s);
+const store={
+  get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1800)}
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Groups ---------- */
+let current=store.get("group",0);
+function renderTabs(){
+  $("#tabs").innerHTML=GROUPS.map((g,i)=>`<button class="tab" role="tab" style="--gc:${g.color}" aria-selected="${i===current}" data-i="${i}">G${g.n}<small>${g.factor.split(" ")[0]}</small></button>`).join("");
+}
+function renderPanel(){
+  const g=GROUPS[current],k="g"+g.n;
+  const notes=store.get("notes-"+k,{}),checks=store.get("checks-"+k,[]);
+  $("#panel").innerHTML=`<div style="--gc:${g.color}">
+   <article class="shop"><div class="awning" aria-hidden="true"></div><div class="shop-body">
+     <span class="factor">${esc(g.factor)}</span>
+     <h2>Group ${g.n}: ${esc(g.title)}</h2>
+     <p class="situation">${esc(g.story)}</p>
+     <p class="challenge">${esc(g.challenge)}</p>
+   </div></article>
+   <section class="block"><h3>What your group must do</h3>
+     ${TASKS.map((t,i)=>`<label class="check"><input type="checkbox" data-c="${i}" ${checks[i]?"checked":""}><span>${esc(t)}</span></label>`).join("")}
+   </section>
+   <section class="block"><h3>Presentation guide</h3>
+     ${FIELDS.map(([id,l,h])=>`<label class="f" for="f-${id}">${l}<em>${h}</em></label><textarea id="f-${id}" data-f="${id}">${esc(notes[id]||"")}</textarea>`).join("")}
+     <div class="row"><button class="btn" id="copy">Copy my notes</button><button class="btn" id="clearG">Clear this group</button><span class="saved" id="saved">Saved on this device</span></div>
+   </section></div>`;
+}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;current=+b.dataset.i;store.set("group",current);renderTabs();renderPanel()});
+$("#panel").addEventListener("input",e=>{
+  const k="g"+GROUPS[current].n;
+  if(e.target.dataset.f){const n=store.get("notes-"+k,{});n[e.target.dataset.f]=e.target.value;store.set("notes-"+k,n)}
+  if(e.target.dataset.c){const c=store.get("checks-"+k,[]);c[+e.target.dataset.c]=e.target.checked;store.set("checks-"+k,c)}
+  const s=$("#saved");if(s)s.textContent="Saved ✓";
+});
+$("#panel").addEventListener("click",async e=>{
+  const g=GROUPS[current],k="g"+g.n;
+  if(e.target.id==="copy"){
+    const n=store.get("notes-"+k,{});
+    const txt=`Group ${g.n} – ${g.factor}: ${g.title}\n\n`+FIELDS.map(([id,l])=>`${l}:\n${n[id]||"—"}`).join("\n\n");
+    try{await navigator.clipboard.writeText(txt);toast("Notes copied")}catch(_){toast("Copy not available")}
+  }
+  if(e.target.id==="clearG"&&confirm("Clear this group’s notes and checklist?")){
+    localStorage.removeItem("notes-"+k);localStorage.removeItem("checks-"+k);renderPanel();toast("Group cleared")
+  }
+});
+$("#clearAll").onclick=()=>{
+  if(!confirm("Clear notes and checklists for all five groups?"))return;
+  GROUPS.forEach(g=>{localStorage.removeItem("notes-g"+g.n);localStorage.removeItem("checks-g"+g.n)});
+  renderPanel();toast("All notes cleared")
+};
+
+/* ---------- Timer ---------- */
+let idx=0,left=PHASES[0].sec,timer=null,endAt=0;
+const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+function buildSegs(){
+  $("#segs").innerHTML=PHASES.map((p,i)=>`<div class="seg" style="flex:${p.sec}"><i></i></div>`).join("");
+}
+function paint(){
+  const p=PHASES[idx];
+  $("#phase").textContent=p.label;
+  $("#clock").textContent=fmt(Math.max(0,left));
+  document.querySelectorAll(".seg").forEach((s,i)=>{
+    s.classList.toggle("done",i<idx);s.classList.toggle("now",i===idx);
+    s.firstElementChild.style.width=i<idx?"100%":i===idx?((p.sec-left)/p.sec*100)+"%":"0";
+  });
+  document.title=(timer?fmt(Math.max(0,left))+" · ":"")+"Business Rescue";
+}
+function beep(n=1){
+  try{
+    const a=new (window.AudioContext||window.webkitAudioContext)();
+    for(let i=0;i<n;i++){const o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);
+      const t=a.currentTime+i*.35;g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);o.start(t);o.stop(t+.25)}
+  }catch(e){}
+  if(navigator.vibrate)navigator.vibrate(n>1?[200,100,200]:200);
+}
+function go(i){
+  idx=i;left=PHASES[idx].sec;
+  if(idx>=1){current=idx-1;store.set("group",current);renderTabs();renderPanel()}
+  if(timer)endAt=Date.now()+left*1000;
+  paint();
+}
+function tick(){
+  left=Math.round((endAt-Date.now())/1000);
+  if(left<=0){
+    if(idx<PHASES.length-1){beep(1);go(idx+1);toast(PHASES[idx].label)}
+    else{stop();left=0;beep(2);$("#phase").textContent="Activity complete";$("#clock").textContent="00:00";return}
+  }
+  paint();
+}
+function start(){endAt=Date.now()+left*1000;timer=setInterval(tick,250);$("#startBtn").textContent="Pause";if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(()=>{})}
+function stop(){clearInterval(timer);timer=null;$("#startBtn").textContent="Start"}
+$("#startBtn").onclick=()=>timer?(stop(),paint()):start();
+$("#skipBtn").onclick=()=>{if(idx<PHASES.length-1)go(idx+1)};
+$("#resetBtn").onclick=()=>{stop();go(0);paint()};
+document.addEventListener("visibilitychange",()=>{if(timer&&!document.hidden)tick()});
+
+/* ---------- PWA ---------- */
+let deferred;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;$("#install").hidden=false});
+$("#install").onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$("#install").hidden=true};
+window.addEventListener("appinstalled",()=>{$("#install").hidden=true;toast("App installed")});
+const net=()=>document.body.classList.toggle("is-offline",!navigator.onLine);
+addEventListener("online",net);addEventListener("offline",net);net();
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
+buildSegs();renderTabs();renderPanel();paint();
+</script>
+</body>
+</html>
